@@ -62,6 +62,15 @@ class RoadmapMilestone:
     outcomes: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class PhaseStatus:
+    """Represents completion state for a roadmap phase."""
+
+    phase: str
+    completed: bool
+    checks: tuple[str, ...]
+
+
 
 def get_agent_architecture() -> AgentArchitecture:
     """Return the architecture contract for Cody."""
@@ -130,4 +139,44 @@ def get_roadmap() -> tuple[RoadmapMilestone, ...]:
                 "Document production runbooks for Cody service operators.",
             ),
         ),
+    )
+
+
+def get_phase_1_status() -> PhaseStatus:
+    """Evaluate completion status for Phase 1 foundation hardening goals."""
+
+    architecture = get_agent_architecture()
+    has_communication_contract = (
+        architecture.communication.tcp_port == 8888
+        and architecture.communication.web_ui == "fastapi_chat_with_provider_badges"
+    )
+    has_runtime_constraints = (
+        architecture.runtime_policy.code_execution_environment == "docker"
+        and architecture.runtime_policy.tools_available
+        and architecture.runtime_policy.filesystem_access == "containerized_sandbox"
+    )
+    has_versioned_phase_metadata = architecture.modular and any(
+        milestone.phase.startswith("Phase 1") for milestone in get_roadmap()
+    )
+
+    checks = (
+        "Communication contract fixed to TCP port 8888 and FastAPI chat UI."
+        if has_communication_contract
+        else "Communication contract is not fully aligned with Phase 1.",
+        "Runtime policy enforces Docker-based sandbox execution with tool access."
+        if has_runtime_constraints
+        else "Runtime policy does not fully satisfy Phase 1 sandbox expectations.",
+        "Architecture remains modular with versioned roadmap metadata."
+        if has_versioned_phase_metadata
+        else "Architecture metadata is missing expected Phase 1 versioning signals.",
+    )
+
+    return PhaseStatus(
+        phase="Phase 1: Foundation hardening",
+        completed=(
+            has_communication_contract
+            and has_runtime_constraints
+            and has_versioned_phase_metadata
+        ),
+        checks=checks,
     )

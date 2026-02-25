@@ -25,6 +25,7 @@ All models are Ollama-served:
 - Lock communication contract for TCP port `8888` and FastAPI chat UI.
 - Validate Docker sandbox runtime policies through automated unit checks.
 - Keep modular architecture metadata versioned through changelog updates.
+- Track phase completion via `get_phase_1_status()` for an explicit machine-readable result.
 
 ### Phase 2: Tooling and memory maturity
 - Broaden tool contract to support richer coding workflows.
