@@ -1,6 +1,6 @@
 import unittest
 
-from codey import get_agent_architecture
+from codey import get_agent_architecture, get_roadmap
 
 
 class AgentArchitectureTests(unittest.TestCase):
@@ -42,6 +42,21 @@ class AgentArchitectureTests(unittest.TestCase):
             architecture.communication.web_ui,
             "fastapi_chat_with_provider_badges",
         )
+
+
+class RoadmapTests(unittest.TestCase):
+    def test_roadmap_contains_three_phases_with_actionable_outcomes(self):
+        roadmap = get_roadmap()
+
+        self.assertEqual(len(roadmap), 3)
+        self.assertTrue(roadmap[0].phase.startswith("Phase 1"))
+        self.assertTrue(roadmap[1].phase.startswith("Phase 2"))
+        self.assertTrue(roadmap[2].phase.startswith("Phase 3"))
+
+        for milestone in roadmap:
+            self.assertGreaterEqual(len(milestone.outcomes), 3)
+            for outcome in milestone.outcomes:
+                self.assertTrue(outcome.endswith("."))
 
 
 if __name__ == "__main__":
