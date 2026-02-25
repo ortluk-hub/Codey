@@ -11,6 +11,7 @@ from .project import (
     get_agent_architecture,
     get_roadmap,
     get_phase_1_status,
+    get_phase_2_status,
 )
 
 __all__ = [
@@ -24,4 +25,5 @@ __all__ = [
     "get_agent_architecture",
     "get_roadmap",
     "get_phase_1_status",
+    "get_phase_2_status",
 ]

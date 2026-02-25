@@ -1,6 +1,11 @@
 import unittest
 
-from codey import get_agent_architecture, get_phase_1_status, get_roadmap
+from codey import (
+    get_agent_architecture,
+    get_phase_1_status,
+    get_phase_2_status,
+    get_roadmap,
+)
 
 
 class AgentArchitectureTests(unittest.TestCase):
@@ -64,6 +69,19 @@ class PhaseStatusTests(unittest.TestCase):
         status = get_phase_1_status()
 
         self.assertEqual(status.phase, "Phase 1: Foundation hardening")
+        self.assertTrue(status.completed)
+        self.assertEqual(len(status.checks), 3)
+        for check in status.checks:
+            self.assertNotIn("not fully", check.lower())
+            self.assertNotIn("does not", check.lower())
+            self.assertNotIn("missing", check.lower())
+
+
+class Phase2StatusTests(unittest.TestCase):
+    def test_phase_2_status_reports_completed_with_expected_checks(self):
+        status = get_phase_2_status()
+
+        self.assertEqual(status.phase, "Phase 2: Tooling and memory maturity")
         self.assertTrue(status.completed)
         self.assertEqual(len(status.checks), 3)
         for check in status.checks:

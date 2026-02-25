@@ -180,3 +180,48 @@ def get_phase_1_status() -> PhaseStatus:
         ),
         checks=checks,
     )
+
+
+def get_phase_2_status() -> PhaseStatus:
+    """Evaluate completion status for Phase 2 tooling and memory maturity goals."""
+
+    architecture = get_agent_architecture()
+    roadmap = get_roadmap()
+
+    has_tooling_contract = (
+        architecture.runtime_policy.tools_available
+        and architecture.runtime_policy.execution_boundary
+        == "restricted_to_assigned_context"
+    )
+    has_memory_quality_controls = (
+        architecture.memory.long_term == "summarized_memory"
+        and architecture.memory.short_term == "full_context_window"
+    )
+    has_regression_coverage_signals = any(
+        milestone.phase.startswith("Phase 2")
+        and any("test coverage" in outcome.lower() for outcome in milestone.outcomes)
+        and any("memory" in outcome.lower() for outcome in milestone.outcomes)
+        for milestone in roadmap
+    )
+
+    checks = (
+        "Tooling contract supports controlled coding workflows through enabled tools and execution boundaries."
+        if has_tooling_contract
+        else "Tooling contract is not fully aligned with Phase 2 workflow requirements.",
+        "Memory strategy pairs summarized long-term memory with full-context short-term retention."
+        if has_memory_quality_controls
+        else "Memory strategy does not fully satisfy Phase 2 quality-control expectations.",
+        "Roadmap tracks Phase 2 regression coverage across architecture and memory expectations."
+        if has_regression_coverage_signals
+        else "Roadmap metadata is missing Phase 2 regression and memory coverage signals.",
+    )
+
+    return PhaseStatus(
+        phase="Phase 2: Tooling and memory maturity",
+        completed=(
+            has_tooling_contract
+            and has_memory_quality_controls
+            and has_regression_coverage_signals
+        ),
+        checks=checks,
+    )
