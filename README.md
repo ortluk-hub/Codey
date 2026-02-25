@@ -1,6 +1,6 @@
 # Cody Phase 1 Foundation
 
-Cody is a modular coding assistant foundation implemented in Python 3.12, now with Phase 2 tooling and memory maturity checks.
+Cody is a modular coding assistant foundation implemented in Python 3.12, now with Phase 3 status orchestration and maturity checks.
 
 ## Modules
 
@@ -11,7 +11,7 @@ Cody is a modular coding assistant foundation implemented in Python 3.12, now wi
 - `llm.py` Ollama client + routing plumbing
 - `memory.py` short-term and long-term memory storage
 - `config.py` runtime settings
-- `status.py` Phase 1 status gates
+- `status.py` Phase 1/2/3 status gates
 
 ## Entrypoints
 
@@ -29,12 +29,13 @@ One JSON object per line.
 - `{"cmd":"chat","message":"hello"}`
 - `{"cmd":"get_phase_1_status"}`
 - `{"cmd":"get_phase_2_status"}`
+- `{"cmd":"get_phase_3_status"}`
 
 ## API Endpoints
 
 - `GET /health` -> `{"status":"ok","service":"cody"}`
 - `POST /chat` with `{"message":"..."}` -> `{"reply":"...","provider":"..."}`
-- `GET /status` -> object containing both phase-1 and phase-2 status checks
+- `GET /status` -> object containing phase-1, phase-2, and phase-3 status checks
 
 Provider badge values are wired as:
 - `ollama-cloud`

@@ -4,6 +4,7 @@ from codey import (
     get_agent_architecture,
     get_phase_1_status,
     get_phase_2_status,
+    get_phase_3_status,
     get_roadmap,
 )
 
@@ -88,6 +89,20 @@ class Phase2StatusTests(unittest.TestCase):
             self.assertNotIn("not fully", check.lower())
             self.assertNotIn("does not", check.lower())
             self.assertNotIn("missing", check.lower())
+
+
+class Phase3StatusTests(unittest.TestCase):
+    def test_phase_3_status_reports_completed_with_expected_checks(self):
+        status = get_phase_3_status()
+
+        self.assertEqual(status.phase, "Phase 3: Delivery and operator visibility")
+        self.assertTrue(status.completed)
+        self.assertEqual(len(status.checks), 3)
+        for check in status.checks:
+            self.assertNotIn("not fully", check.lower())
+            self.assertNotIn("does not", check.lower())
+            self.assertNotIn("missing", check.lower())
+            self.assertNotIn("lacks", check.lower())
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import socketserver
 from cody.config import DEFAULT_SETTINGS
 from cody.llm import LLMRouter, OllamaClient
 from cody.sandbox import run_python_in_docker
-from cody.status import get_phase_1_status, get_phase_2_status
+from cody.status import get_phase_1_status, get_phase_2_status, get_phase_3_status
 
 
 def _build_router() -> LLMRouter:
@@ -32,6 +32,8 @@ def handle_command(payload: dict) -> dict:
         return {"ok": True, "status": get_phase_1_status()}
     if cmd == "get_phase_2_status":
         return {"ok": True, "status": get_phase_2_status()}
+    if cmd == "get_phase_3_status":
+        return {"ok": True, "status": get_phase_3_status()}
     return {"ok": False, "error": "unknown_command"}
 
 

@@ -26,19 +26,15 @@ def _version_headers() -> list[str]:
     ]
 
 
-def _has_version_header() -> bool:
-    return bool(_version_headers())
-
-
-def _phase_2_is_versioned() -> bool:
-    return len(_version_headers()) >= 2
+def _is_versioned_at_least(version_count: int) -> bool:
+    return len(_version_headers()) >= version_count
 
 
 def get_phase_1_status() -> dict:
     status = {
         "tcp_contract_locked": True,
         "docker_policy_validated": True,
-        "architecture_metadata_versioned": _has_version_header(),
+        "architecture_metadata_versioned": _is_versioned_at_least(1),
     }
     status["complete"] = all(status.values())
     return status
@@ -48,7 +44,17 @@ def get_phase_2_status() -> dict:
     status = {
         "tooling_contract_expanded": True,
         "memory_quality_controls": True,
-        "phase_2_metadata_versioned": _phase_2_is_versioned(),
+        "phase_2_metadata_versioned": _is_versioned_at_least(2),
+    }
+    status["complete"] = all(status.values())
+    return status
+
+
+def get_phase_3_status() -> dict:
+    status = {
+        "multi_phase_status_available": True,
+        "tcp_contract_supports_phase_3": True,
+        "phase_3_metadata_versioned": _is_versioned_at_least(3),
     }
     status["complete"] = all(status.values())
     return status
