@@ -25,6 +25,13 @@ class MemoryTests(unittest.TestCase):
             store.save_long_term_summary(summary)
             self.assertEqual(store.load_long_term_summary(), summary)
 
+    def test_long_term_summary_requires_topic_and_summary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store = MemoryStore(long_term_path=Path(tmp) / "memory.json")
+
+            with self.assertRaises(ValueError):
+                store.save_long_term_summary({"topic": "", "summary": "stored"})
+
 
 if __name__ == "__main__":
     unittest.main()

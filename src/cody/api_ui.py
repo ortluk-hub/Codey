@@ -2,7 +2,7 @@
 
 from cody.config import DEFAULT_SETTINGS
 from cody.llm import LLMRouter, OllamaClient
-from cody.status import get_phase_1_status
+from cody.status import get_phase_1_status, get_phase_2_status
 
 
 def _build_router() -> LLMRouter:
@@ -33,7 +33,7 @@ if FastAPI:
 
     @app.get("/status")
     def status() -> dict:
-        return get_phase_1_status()
+        return {"phase_1": get_phase_1_status(), "phase_2": get_phase_2_status()}
 
     @app.post("/chat")
     def chat(body: ChatRequest) -> dict:

@@ -2,7 +2,7 @@ import os
 import tempfile
 import unittest
 
-from cody.status import get_phase_1_status
+from cody.status import get_phase_1_status, get_phase_2_status
 
 
 class StatusTests(unittest.TestCase):
@@ -33,6 +33,24 @@ class StatusTests(unittest.TestCase):
             status["tcp_contract_locked"]
             and status["docker_policy_validated"]
             and status["architecture_metadata_versioned"],
+        )
+
+    def test_phase_2_status_shape(self):
+        status = get_phase_2_status()
+
+        self.assertIn("tooling_contract_expanded", status)
+        self.assertIn("memory_quality_controls", status)
+        self.assertIn("phase_2_metadata_versioned", status)
+        self.assertIn("complete", status)
+
+        self.assertIsInstance(status["tooling_contract_expanded"], bool)
+        self.assertIsInstance(status["memory_quality_controls"], bool)
+        self.assertIsInstance(status["phase_2_metadata_versioned"], bool)
+        self.assertEqual(
+            status["complete"],
+            status["tooling_contract_expanded"]
+            and status["memory_quality_controls"]
+            and status["phase_2_metadata_versioned"],
         )
 
 

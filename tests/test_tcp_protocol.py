@@ -35,6 +35,12 @@ class TCPProtocolTests(unittest.TestCase):
         response = self._send_line(b'{"cmd":"ping"}\n')
         self.assertEqual(response, {"ok": True, "reply": "pong"})
 
+    def test_phase_2_status_command(self):
+        response = self._send_line(b'{"cmd":"get_phase_2_status"}\n')
+        self.assertTrue(response["ok"])
+        self.assertIn("status", response)
+        self.assertIn("tooling_contract_expanded", response["status"])
+
     def test_invalid_json_framing(self):
         response = self._send_line(b'{"cmd":"ping"\n')
         self.assertEqual(response["ok"], False)

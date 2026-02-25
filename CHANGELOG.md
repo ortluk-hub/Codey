@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.0] - 2026-02-25
+
+### Added
+- Implemented Cody Phase 2 status tracking with `get_phase_2_status` and completion gate checks for tooling, memory controls, and changelog versioning.
+- Added TCP command `get_phase_2_status` so NDJSON clients can query Phase 2 readiness.
+- Expanded FastAPI `/status` response to include both phase-1 and phase-2 status payloads.
+- Added memory summary validation so long-term summaries require non-empty `topic` and `summary` fields.
+- Added unit tests for Phase 2 status shape, Phase 2 TCP command behavior, and memory summary validation.
+
 ## [1.0.0] - 2026-02-25
 
 ### Added
