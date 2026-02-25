@@ -1,4 +1,4 @@
-"""Phase-1 machine-readable status tracking."""
+"""Machine-readable status tracking for Cody phases."""
 
 from pathlib import Path
 
@@ -16,13 +16,22 @@ def _resolve_changelog_path() -> Path:
 CHANGELOG_PATH = _resolve_changelog_path()
 
 
-def _has_version_header() -> bool:
+def _version_headers() -> list[str]:
     if not CHANGELOG_PATH.exists():
-        return False
-    for line in CHANGELOG_PATH.read_text(encoding="utf-8").splitlines():
-        if line.startswith("## ["):
-            return True
-    return False
+        return []
+    return [
+        line.strip()
+        for line in CHANGELOG_PATH.read_text(encoding="utf-8").splitlines()
+        if line.startswith("## [")
+    ]
+
+
+def _has_version_header() -> bool:
+    return bool(_version_headers())
+
+
+def _phase_2_is_versioned() -> bool:
+    return len(_version_headers()) >= 2
 
 
 def get_phase_1_status() -> dict:
@@ -30,6 +39,16 @@ def get_phase_1_status() -> dict:
         "tcp_contract_locked": True,
         "docker_policy_validated": True,
         "architecture_metadata_versioned": _has_version_header(),
+    }
+    status["complete"] = all(status.values())
+    return status
+
+
+def get_phase_2_status() -> dict:
+    status = {
+        "tooling_contract_expanded": True,
+        "memory_quality_controls": True,
+        "phase_2_metadata_versioned": _phase_2_is_versioned(),
     }
     status["complete"] = all(status.values())
     return status
