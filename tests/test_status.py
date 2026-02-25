@@ -1,9 +1,22 @@
+import os
+import tempfile
 import unittest
 
 from cody.status import get_phase_1_status
 
 
 class StatusTests(unittest.TestCase):
+    def test_phase_1_status_independent_of_working_directory(self):
+        original_cwd = os.getcwd()
+        try:
+            with tempfile.TemporaryDirectory() as temp_dir:
+                os.chdir(temp_dir)
+                status = get_phase_1_status()
+        finally:
+            os.chdir(original_cwd)
+
+        self.assertTrue(status["architecture_metadata_versioned"])
+
     def test_phase_1_status_shape(self):
         status = get_phase_1_status()
 

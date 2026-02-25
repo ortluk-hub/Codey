@@ -3,7 +3,17 @@
 from pathlib import Path
 
 
-CHANGELOG_PATH = Path("CHANGELOG.md")
+def _resolve_changelog_path() -> Path:
+    """Resolve CHANGELOG.md from the project root, independent of process CWD."""
+    status_file = Path(__file__).resolve()
+    for parent in status_file.parents:
+        candidate = parent / "CHANGELOG.md"
+        if candidate.exists():
+            return candidate
+    return status_file.parents[2] / "CHANGELOG.md"
+
+
+CHANGELOG_PATH = _resolve_changelog_path()
 
 
 def _has_version_header() -> bool:
