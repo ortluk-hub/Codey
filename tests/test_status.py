@@ -2,7 +2,7 @@ import os
 import tempfile
 import unittest
 
-from cody.status import get_phase_1_status, get_phase_2_status
+from cody.status import get_phase_1_status, get_phase_2_status, get_phase_3_status
 
 
 class StatusTests(unittest.TestCase):
@@ -51,6 +51,24 @@ class StatusTests(unittest.TestCase):
             status["tooling_contract_expanded"]
             and status["memory_quality_controls"]
             and status["phase_2_metadata_versioned"],
+        )
+
+    def test_phase_3_status_shape(self):
+        status = get_phase_3_status()
+
+        self.assertIn("multi_phase_status_available", status)
+        self.assertIn("tcp_contract_supports_phase_3", status)
+        self.assertIn("phase_3_metadata_versioned", status)
+        self.assertIn("complete", status)
+
+        self.assertIsInstance(status["multi_phase_status_available"], bool)
+        self.assertIsInstance(status["tcp_contract_supports_phase_3"], bool)
+        self.assertIsInstance(status["phase_3_metadata_versioned"], bool)
+        self.assertEqual(
+            status["complete"],
+            status["multi_phase_status_available"]
+            and status["tcp_contract_supports_phase_3"]
+            and status["phase_3_metadata_versioned"],
         )
 
 

@@ -225,3 +225,50 @@ def get_phase_2_status() -> PhaseStatus:
         ),
         checks=checks,
     )
+
+
+def get_phase_3_status() -> PhaseStatus:
+    """Evaluate completion status for Phase 3 delivery and operator visibility goals."""
+
+    architecture = get_agent_architecture()
+    roadmap = get_roadmap()
+
+    has_status_visibility = architecture.modular and any(
+        milestone.phase.startswith("Phase 3")
+        and any("status reporting" in outcome.lower() for outcome in milestone.outcomes)
+        for milestone in roadmap
+    )
+    has_release_readiness_criteria = any(
+        milestone.phase.startswith("Phase 3")
+        and any("release readiness" in outcome.lower() for outcome in milestone.outcomes)
+        and any("fallback" in outcome.lower() for outcome in milestone.outcomes)
+        for milestone in roadmap
+    )
+    has_operator_runbook_signal = any(
+        milestone.phase.startswith("Phase 3")
+        and any("runbooks" in outcome.lower() for outcome in milestone.outcomes)
+        and any("operators" in outcome.lower() for outcome in milestone.outcomes)
+        for milestone in roadmap
+    )
+
+    checks = (
+        "Phase 3 roadmap captures status-reporting visibility requirements for operators."
+        if has_status_visibility
+        else "Phase 3 visibility requirements are not fully represented in roadmap metadata.",
+        "Phase 3 roadmap defines release readiness criteria for fallback model behavior."
+        if has_release_readiness_criteria
+        else "Phase 3 roadmap is missing release-readiness fallback criteria.",
+        "Phase 3 roadmap includes production runbook guidance for Cody operators."
+        if has_operator_runbook_signal
+        else "Phase 3 roadmap lacks operator-facing production runbook guidance.",
+    )
+
+    return PhaseStatus(
+        phase="Phase 3: Delivery and operator visibility",
+        completed=(
+            has_status_visibility
+            and has_release_readiness_criteria
+            and has_operator_runbook_signal
+        ),
+        checks=checks,
+    )

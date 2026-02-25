@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0] - 2026-02-25
+
+### Added
+- Implemented Cody Phase 3 status tracking with `get_phase_3_status` and completion gate checks for multi-phase readiness, TCP support, and changelog versioning depth.
+- Added TCP command `get_phase_3_status` so NDJSON clients can query Phase 3 readiness.
+- Expanded FastAPI `/status` response to include phase-3 status alongside existing phase checks.
+- Added unit tests for Phase 3 status payload shape and Phase 3 TCP command behavior.
+
 ## [1.1.0] - 2026-02-25
 
 ### Added
