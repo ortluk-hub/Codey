@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0] - 2026-02-25
+
+### Added
+- Added a formal three-phase roadmap contract with milestones and outcomes exposed from `codey.project`.
+- Added roadmap unit tests to ensure milestone structure and outcome quality remain stable.
+- Documented roadmap phases in README for quick operator visibility.
+
 ## [0.3.0] - 2026-02-25
 
 ### Changed

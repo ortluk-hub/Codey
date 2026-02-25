@@ -53,6 +53,15 @@ class AgentArchitecture:
     communication: CommunicationConfig
 
 
+@dataclass(frozen=True)
+class RoadmapMilestone:
+    """Represents a planned milestone for the Cody framework."""
+
+    phase: str
+    focus: str
+    outcomes: tuple[str, ...]
+
+
 
 def get_agent_architecture() -> AgentArchitecture:
     """Return the architecture contract for Cody."""
@@ -86,5 +95,39 @@ def get_agent_architecture() -> AgentArchitecture:
         communication=CommunicationConfig(
             tcp_port=8888,
             web_ui="fastapi_chat_with_provider_badges",
+        ),
+    )
+
+
+def get_roadmap() -> tuple[RoadmapMilestone, ...]:
+    """Return the near-term roadmap for Cody."""
+
+    return (
+        RoadmapMilestone(
+            phase="Phase 1: Foundation hardening",
+            focus="Stabilize core architecture contract and runtime constraints.",
+            outcomes=(
+                "Lock communication contract for TCP port 8888 and FastAPI chat UI.",
+                "Validate Docker sandbox runtime policies through automated unit checks.",
+                "Keep modular architecture metadata versioned through changelog updates.",
+            ),
+        ),
+        RoadmapMilestone(
+            phase="Phase 2: Tooling and memory maturity",
+            focus="Expand capability coverage while preserving predictable behavior.",
+            outcomes=(
+                "Broaden tool contract to support richer coding workflows.",
+                "Refine summarized long-term memory strategy quality controls.",
+                "Add test coverage around architecture regressions and memory expectations.",
+            ),
+        ),
+        RoadmapMilestone(
+            phase="Phase 3: Delivery and operator visibility",
+            focus="Improve deployment ergonomics and operational confidence.",
+            outcomes=(
+                "Expose roadmap-aligned status reporting in project documentation.",
+                "Define release readiness criteria for model fallback behavior.",
+                "Document production runbooks for Cody service operators.",
+            ),
         ),
     )

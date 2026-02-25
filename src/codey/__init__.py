@@ -6,7 +6,9 @@ from .project import (
     MemoryStrategy,
     RuntimePolicy,
     CommunicationConfig,
+    RoadmapMilestone,
     get_agent_architecture,
+    get_roadmap,
 )
 
 __all__ = [
@@ -15,5 +17,7 @@ __all__ = [
     "MemoryStrategy",
     "RuntimePolicy",
     "CommunicationConfig",
+    "RoadmapMilestone",
     "get_agent_architecture",
+    "get_roadmap",
 ]

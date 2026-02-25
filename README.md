@@ -19,6 +19,23 @@ All models are Ollama-served:
 - Intent resolver: `ollama-local-tiny`
 - Local fallback: `ollama-local`
 
+## Roadmap
+
+### Phase 1: Foundation hardening
+- Lock communication contract for TCP port `8888` and FastAPI chat UI.
+- Validate Docker sandbox runtime policies through automated unit checks.
+- Keep modular architecture metadata versioned through changelog updates.
+
+### Phase 2: Tooling and memory maturity
+- Broaden tool contract to support richer coding workflows.
+- Refine summarized long-term memory strategy quality controls.
+- Add test coverage around architecture regressions and memory expectations.
+
+### Phase 3: Delivery and operator visibility
+- Expose roadmap-aligned status reporting in project documentation.
+- Define release readiness criteria for model fallback behavior.
+- Document production runbooks for Cody service operators.
+
 ## Development
 
 Run tests with:
