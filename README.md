@@ -31,6 +31,7 @@ All models are Ollama-served:
 - Broaden tool contract to support richer coding workflows.
 - Refine summarized long-term memory strategy quality controls.
 - Add test coverage around architecture regressions and memory expectations.
+- Track phase completion via `get_phase_2_status()` for an explicit machine-readable result.
 
 ### Phase 3: Delivery and operator visibility
 - Expose roadmap-aligned status reporting in project documentation.

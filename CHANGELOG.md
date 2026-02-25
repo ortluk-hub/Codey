@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0] - 2026-02-25
+
+### Added
+- Added `get_phase_2_status()` to provide a machine-readable completion signal for Phase 2 tooling and memory goals.
+- Added unit tests validating that Phase 2 reports complete with three passing checks.
+- Documented Phase 2 status tracking in the roadmap section of README.
+
 ## [0.5.0] - 2026-02-25
 
 ### Added
