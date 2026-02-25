@@ -1,46 +1,47 @@
-# Codey
+# Cody Phase 1 Foundation
 
-Codey defines the architecture contract for **Cody**, a modular coder agent framework.
+Cody is a modular coding assistant foundation implemented in Python 3.12.
 
-## Agent architecture
+## Modules
 
-Cody is specified as:
-- modular by design
-- reachable via TCP server commands on port `8888`
-- equipped with tool support and filesystem command access
-- sandboxed through Docker for safe code execution
-- surfaced through a FastAPI web UI chat with provider badges
-- memory-managed with short-term full context and long-term summarized memory
+`src/cody/` contains:
+- `tcp_server.py` NDJSON TCP contract on port 8888
+- `api_ui.py` FastAPI web UI endpoints
+- `sandbox.py` Docker sandbox runner + policy object
+- `llm.py` Ollama client + routing plumbing
+- `memory.py` short-term and long-term memory storage
+- `config.py` runtime settings
+- `status.py` Phase 1 status gates
 
-## LLM stack
+## Entrypoints
 
-All models are Ollama-served:
-- Primary: `ollama-cloud`
-- Intent resolver: `ollama-local-tiny`
-- Local fallback: `ollama-local`
+```bash
+python -m cody.tcp_server
+python -m cody.api_ui
+```
 
-## Roadmap
+## TCP Protocol (NDJSON)
 
-### Phase 1: Foundation hardening
-- Lock communication contract for TCP port `8888` and FastAPI chat UI.
-- Validate Docker sandbox runtime policies through automated unit checks.
-- Keep modular architecture metadata versioned through changelog updates.
-- Track phase completion via `get_phase_1_status()` for an explicit machine-readable result.
+One JSON object per line.
 
-### Phase 2: Tooling and memory maturity
-- Broaden tool contract to support richer coding workflows.
-- Refine summarized long-term memory strategy quality controls.
-- Add test coverage around architecture regressions and memory expectations.
-- Track phase completion via `get_phase_2_status()` for an explicit machine-readable result.
+- `{"cmd":"ping"}`
+- `{"cmd":"run","language":"python","code":"print(1)"}`
+- `{"cmd":"chat","message":"hello"}`
+- `{"cmd":"get_phase_1_status"}`
 
-### Phase 3: Delivery and operator visibility
-- Expose roadmap-aligned status reporting in project documentation.
-- Define release readiness criteria for model fallback behavior.
-- Document production runbooks for Cody service operators.
+## API Endpoints
 
-## Development
+- `GET /health` -> `{"status":"ok","service":"cody"}`
+- `POST /chat` with `{"message":"..."}` -> `{"reply":"...","provider":"..."}`
+- `GET /status` -> phase-1 status object
 
-Run tests with:
+Provider badge values are wired as:
+- `ollama-cloud`
+- `ollama-local-tiny`
+- `ollama-local`
+- `stub`
+
+## Tests
 
 ```bash
 PYTHONPATH=src python -m unittest discover -s tests -p 'test_*.py'
