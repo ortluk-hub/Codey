@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0] - 2026-02-25
+
+### Added
+- Added `PhaseStatus` and `get_phase_1_status()` to provide a machine-readable completion signal for Phase 1 goals.
+- Added unit tests validating that Phase 1 reports complete with three passing checks.
+- Documented Phase 1 status tracking in the roadmap section of README.
+
 ## [0.4.0] - 2026-02-25
 
 ### Added
