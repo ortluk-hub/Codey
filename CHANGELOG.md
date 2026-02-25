@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0] - 2026-02-25
+
+### Changed
+- Updated the Cody architecture contract to represent the coder-agent framework with TCP communication and web UI integration.
+- Added a communication configuration object covering TCP port `8888` and FastAPI chat UI provider badges.
+- Updated the LLM stack contract to use `ollama-cloud` primary, `ollama-local-tiny` intent resolver, and `ollama-local` fallback.
+- Extended runtime policy with explicit Docker execution environment metadata.
+- Refreshed README and tests to validate the new framework contract end-to-end.
+
 ## [0.2.0] - 2026-02-25
 
 ### Changed

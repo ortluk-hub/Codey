@@ -1,4 +1,4 @@
-"""Core project model for Cody/Codey agent architecture."""
+"""Core project model for Cody/Codey agent framework."""
 
 from dataclasses import dataclass
 
@@ -27,11 +27,20 @@ class RuntimePolicy:
     tools_available: bool
     filesystem_access: str
     execution_boundary: str
+    code_execution_environment: str
+
+
+@dataclass(frozen=True)
+class CommunicationConfig:
+    """External communication channels for the agent."""
+
+    tcp_port: int
+    web_ui: str
 
 
 @dataclass(frozen=True)
 class AgentArchitecture:
-    """Canonical architecture for the Cody coding agent."""
+    """Canonical architecture for the Cody coder agent framework."""
 
     name: str
     mission: str
@@ -41,6 +50,7 @@ class AgentArchitecture:
     fallback_llm: LLMConfig
     runtime_policy: RuntimePolicy
     memory: MemoryStrategy
+    communication: CommunicationConfig
 
 
 
@@ -49,27 +59,32 @@ def get_agent_architecture() -> AgentArchitecture:
 
     return AgentArchitecture(
         name="Cody",
-        mission="A modular coding agent for containerized sandbox execution.",
+        mission="A modular coder agent with TCP communication and sandboxed execution.",
         modular=True,
         intent_resolver=LLMConfig(
-            role="intent_resolver_and_tool_caller",
-            model="small-llm",
+            role="intent_resolver",
+            model="ollama-local-tiny",
         ),
         primary_llm=LLMConfig(
             role="main_reasoning",
-            model="qwen3-coder:480b-cloud",
+            model="ollama-cloud",
         ),
         fallback_llm=LLMConfig(
             role="local_fallback",
-            model="qwen2.5:1.5b",
+            model="ollama-local",
         ),
         runtime_policy=RuntimePolicy(
             tools_available=True,
             filesystem_access="containerized_sandbox",
             execution_boundary="restricted_to_assigned_context",
+            code_execution_environment="docker",
         ),
         memory=MemoryStrategy(
             short_term="full_context_window",
             long_term="summarized_memory",
+        ),
+        communication=CommunicationConfig(
+            tcp_port=8888,
+            web_ui="fastapi_chat_with_provider_badges",
         ),
     )
