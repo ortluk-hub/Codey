@@ -2,6 +2,8 @@
 
 from dataclasses import dataclass, field
 import json
+import logging
+import uuid
 from urllib import error, request
 
 
@@ -39,6 +41,7 @@ class LLMRouter:
     primary_model: str = "qwen3-coder:480b-cloud"
     fallback_model: str = "deepseek-coder:6.7b"
     pending_messages: list[str] = field(default_factory=list)
+    logger: logging.Logger = field(default_factory=lambda: logging.getLogger("cody.llm"))
 
     def _compose_message(self, message: str) -> str:
         if not self.pending_messages:
@@ -52,25 +55,82 @@ class LLMRouter:
             f"Latest user message:\n{message}"
         )
 
-    def _route_to_provider(self, message: str) -> tuple[str | None, str | None]:
+    def _route_to_provider(self, message: str, request_id: str) -> tuple[str | None, str | None]:
+        self.logger.info(
+            "llm.call.start request_id=%s provider=%s model=%s",
+            request_id,
+            "ollama-cloud",
+            self.primary_model,
+        )
         primary_reply = self.primary_client.chat(message, model=self.primary_model)
         if primary_reply:
+            self.logger.info(
+                "llm.call.success request_id=%s provider=%s model=%s",
+                request_id,
+                "ollama-cloud",
+                self.primary_model,
+            )
             return primary_reply, "ollama-cloud"
+        self.logger.info(
+            "llm.call.unavailable request_id=%s provider=%s model=%s",
+            request_id,
+            "ollama-cloud",
+            self.primary_model,
+        )
 
+        self.logger.info(
+            "llm.call.start request_id=%s provider=%s model=%s",
+            request_id,
+            "ollama-local",
+            self.fallback_model,
+        )
         fallback_reply = self.fallback_client.chat(message, model=self.fallback_model)
         if fallback_reply:
+            self.logger.info(
+                "llm.call.success request_id=%s provider=%s model=%s",
+                request_id,
+                "ollama-local",
+                self.fallback_model,
+            )
             return fallback_reply, "ollama-local"
+        self.logger.info(
+            "llm.call.unavailable request_id=%s provider=%s model=%s",
+            request_id,
+            "ollama-local",
+            self.fallback_model,
+        )
 
         return None, None
 
-    def route_chat(self, message: str) -> dict:
+    def route_chat(self, message: str, request_id: str | None = None, recipient: str = "unknown") -> dict:
+        trace_id = request_id or uuid.uuid4().hex
+        self.logger.info(
+            "llm.request.received request_id=%s recipient=%s queued_messages=%s",
+            trace_id,
+            recipient,
+            len(self.pending_messages),
+        )
         composed_message = self._compose_message(message)
-        reply, provider = self._route_to_provider(composed_message)
+        reply, provider = self._route_to_provider(composed_message, request_id=trace_id)
         if reply and provider:
             self.pending_messages.clear()
+            self.logger.info(
+                "llm.response.sent request_id=%s recipient=%s provider=%s queued_messages=%s",
+                trace_id,
+                recipient,
+                provider,
+                len(self.pending_messages),
+            )
             return {"reply": reply, "provider": provider}
 
         self.pending_messages.append(message)
+        self.logger.info(
+            "llm.response.sent request_id=%s recipient=%s provider=%s queued_messages=%s",
+            trace_id,
+            recipient,
+            "stub",
+            len(self.pending_messages),
+        )
         return {
             "reply": f"[stub] Cody saved your message while providers are unavailable: {message}",
             "provider": "stub",

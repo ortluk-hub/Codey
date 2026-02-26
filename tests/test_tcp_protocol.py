@@ -12,8 +12,8 @@ class StubRouter:
         self.provider = provider
         self.calls = []
 
-    def route_chat(self, message: str) -> dict:
-        self.calls.append(message)
+    def route_chat(self, message: str, request_id=None, recipient="unknown") -> dict:
+        self.calls.append({"message": message, "request_id": request_id, "recipient": recipient})
         return {"reply": self.reply, "provider": self.provider}
 
 
@@ -67,13 +67,27 @@ class TCPProtocolTests(unittest.TestCase):
         router_a = StubRouter(reply="a")
         router_b = StubRouter(reply="b")
 
-        response_a = handle_command({"cmd": "chat", "message": "hello from a"}, router=router_a)
-        response_b = handle_command({"cmd": "chat", "message": "hello from b"}, router=router_b)
+        response_a = handle_command(
+            {"cmd": "chat", "message": "hello from a"},
+            router=router_a,
+            request_id="req-a",
+            recipient="api-http",
+        )
+        response_b = handle_command(
+            {"cmd": "chat", "message": "hello from b"},
+            router=router_b,
+            request_id="req-b",
+            recipient="tcp-client",
+        )
 
         self.assertEqual(response_a, {"ok": True, "reply": "a", "provider": "stub"})
         self.assertEqual(response_b, {"ok": True, "reply": "b", "provider": "stub"})
-        self.assertEqual(router_a.calls, ["hello from a"])
-        self.assertEqual(router_b.calls, ["hello from b"])
+        self.assertEqual(router_a.calls[0]["message"], "hello from a")
+        self.assertEqual(router_b.calls[0]["message"], "hello from b")
+        self.assertEqual(router_a.calls[0]["recipient"], "api-http")
+        self.assertEqual(router_b.calls[0]["recipient"], "tcp-client")
+        self.assertEqual(router_a.calls[0]["request_id"], "req-a")
+        self.assertEqual(router_b.calls[0]["request_id"], "req-b")
 
 
 if __name__ == "__main__":

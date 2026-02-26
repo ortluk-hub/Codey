@@ -13,6 +13,24 @@ Cody is a modular coding assistant foundation implemented in Python 3.12, now wi
 - `config.py` runtime settings
 - `status.py` Phase 1/2/3 status gates
 
+## Environment Setup (first-time)
+
+Yes — adding this setup helps users avoid common import/runtime issues on first run.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Set `PYTHONPATH` so both package and module-style imports used in this repo resolve:
+
+```bash
+export PYTHONPATH=src/cody:src
+```
+
+Optional: make it persistent for your shell by adding the export line to `~/.bashrc`.
+
 ## Entrypoints
 
 ```bash
