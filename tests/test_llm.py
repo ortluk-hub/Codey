@@ -53,6 +53,23 @@ class LLMRouterTests(unittest.TestCase):
         self.assertIn("- second", latest_payload)
         self.assertIn("Latest user message:\nthird", latest_payload)
 
+    def test_route_chat_logs_request_lifecycle_with_provider_and_recipient(self):
+        router = LLMRouter(
+            intent_client=StubClient(),
+            primary_client=StubClient(response="ok"),
+            fallback_client=StubClient(response=None),
+        )
+
+        with self.assertLogs("cody.llm", level="INFO") as captured:
+            response = router.route_chat("hello", request_id="req-123", recipient="api-http")
+
+        self.assertEqual(response["provider"], "ollama-cloud")
+        joined = "\n".join(captured.output)
+        self.assertIn("llm.request.received request_id=req-123 recipient=api-http", joined)
+        self.assertIn("llm.call.start request_id=req-123 provider=ollama-cloud", joined)
+        self.assertIn("llm.call.success request_id=req-123 provider=ollama-cloud", joined)
+        self.assertIn("llm.response.sent request_id=req-123 recipient=api-http provider=ollama-cloud", joined)
+
 
 if __name__ == "__main__":
     unittest.main()

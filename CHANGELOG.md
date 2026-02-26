@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.7] - 2026-02-26
+- Added a first-time environment setup section to `README.md` with virtualenv creation, dependency installation, and `PYTHONPATH=src/cody:src` guidance so users can run/test successfully on initial setup.
+
+## [0.1.6] - 2026-02-26
+- Added structured LLM lifecycle logging in `LLMRouter` with `request_id`, selected model/provider, and response recipient metadata.
+- Extended TCP and API chat flows to propagate request tracing metadata into router calls for end-to-end request visibility.
+- Added unit tests for LLM lifecycle log events and router metadata forwarding in chat command handling.
+
 ## [0.1.5] - 2026-02-26
 - Added resilient stub recovery in `LLMRouter` to queue user messages while providers are unavailable and replay queued context to the first recovered provider call.
 - Switched API and TCP chat handlers to use a shared router instance so queued stub messages persist across requests.

@@ -160,7 +160,7 @@ if FastAPI:
 
     @app.post("/chat")
     def chat(body: ChatRequest) -> dict:
-        return ROUTER.route_chat(body.message)
+        return ROUTER.route_chat(body.message, recipient="api-http")
 else:
     app = None
 

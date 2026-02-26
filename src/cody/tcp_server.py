@@ -2,6 +2,7 @@
 
 import json
 import socketserver
+import uuid
 
 from config import DEFAULT_SETTINGS
 from llm import LLMRouter, OllamaClient
@@ -17,7 +18,12 @@ def _build_router() -> LLMRouter:
     )
 
 
-def handle_command(payload: dict, router: LLMRouter | None = None) -> dict:
+def handle_command(
+    payload: dict,
+    router: LLMRouter | None = None,
+    request_id: str | None = None,
+    recipient: str = "unknown",
+) -> dict:
     cmd = payload.get("cmd")
     if cmd == "ping":
         return {"ok": True, "reply": "pong"}
@@ -27,7 +33,9 @@ def handle_command(payload: dict, router: LLMRouter | None = None) -> dict:
         return run_python_in_docker(payload.get("code", ""))
     if cmd == "chat":
         active_router = router or _build_router()
-        routed = active_router.route_chat(payload.get("message", ""))
+        routed = active_router.route_chat(
+            payload.get("message", ""), request_id=request_id, recipient=recipient
+        )
         return {"ok": True, **routed}
     if cmd == "get_phase_1_status":
         return {"ok": True, "status": get_phase_1_status()}
@@ -70,7 +78,16 @@ class NDJSONRequestHandler(socketserver.StreamRequestHandler):
                 self._send_safe({"ok": False, "error": "invalid_message_type"})
                 continue
 
-            self._send_safe(handle_command(payload, router=self.router))
+            request_id = payload.get("request_id") or uuid.uuid4().hex
+            recipient = self.client_address[0] if self.client_address else "tcp-client"
+            self._send_safe(
+                handle_command(
+                    payload,
+                    router=self.router,
+                    request_id=request_id,
+                    recipient=recipient,
+                )
+            )
 
     def _send_safe(self, body: dict) -> None:
         try:
