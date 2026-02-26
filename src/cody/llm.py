@@ -1,4 +1,4 @@
-"""LLM plumbing for Ollama-backed routing with phase-1 stubs."""
+#"""LLM plumbing for Ollama-backed routing with phase-1 stubs."""
 
 from dataclasses import dataclass
 import json
@@ -36,18 +36,29 @@ class LLMRouter:
     intent_client: OllamaClient
     primary_client: OllamaClient
     fallback_client: OllamaClient
+    
+    intent_model: str = "qwen3:0.6b"
+    primary_model: str = "qwen3-coder:480b-cloud"
+    fallback_model: str = "qwen2.5:1.5b
 
     def route_chat(self, message: str) -> dict:
-        _ = self.intent_client.chat(message, model="ollama-local-tiny")
+        # Try primary (cloud) first
+        try:
+            reply = self.primary_client.chat(message, model=self.primary_model)
+            if reply:
+                return {"reply": reply, "provider": "qwen3-coder:480b-cloud"}
+        except Exception as e:
+            print(f"Primary failed: {e}")
 
-        reply = self.primary_client.chat(message, model="ollama-cloud")
-        if reply:
-            return {"reply": reply, "provider": "ollama-cloud"}
+        # Try fallback (local)
+        try:
+            reply = self.fallback_client.chat(message, model=self.fallback_model)
+            if reply:
+                return {"reply": reply, "provider": "deepseek-coder:6.7b"}
+        except Exception as e:
+            print(f"Fallback failed: {e}")
 
-        reply = self.fallback_client.chat(message, model="ollama-local")
-        if reply:
-            return {"reply": reply, "provider": "ollama-local"}
-
+        # All failed
         return {
             "reply": f"[stub] Cody received: {message}",
             "provider": "stub",
