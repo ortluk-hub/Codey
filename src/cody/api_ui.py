@@ -1,8 +1,8 @@
 """FastAPI UI entrypoint for Cody."""
 
-from cody.config import DEFAULT_SETTINGS
-from cody.llm import LLMRouter, OllamaClient
-from cody.status import get_phase_1_status, get_phase_2_status, get_phase_3_status
+from config import DEFAULT_SETTINGS
+from llm import LLMRouter, OllamaClient
+from status import get_phase_1_status, get_phase_2_status, get_phase_3_status
 
 
 def _build_router() -> LLMRouter:
@@ -53,7 +53,7 @@ def main() -> None:
         print("uvicorn not installed. Install uvicorn and rerun.")
         return
 
-    uvicorn.run("cody.api_ui:app", host="0.0.0.0", port=8000, reload=False)
+    uvicorn.run("api_ui:app", host="0.0.0.0", port=8000, reload=False)
 
 
 if __name__ == "__main__":

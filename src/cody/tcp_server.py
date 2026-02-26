@@ -3,10 +3,10 @@
 import json
 import socketserver
 
-from cody.config import DEFAULT_SETTINGS
-from cody.llm import LLMRouter, OllamaClient
-from cody.sandbox import run_python_in_docker
-from cody.status import get_phase_1_status, get_phase_2_status, get_phase_3_status
+from config import DEFAULT_SETTINGS
+from llm import LLMRouter, OllamaClient
+from sandbox import run_python_in_docker
+from status import get_phase_1_status, get_phase_2_status, get_phase_3_status
 
 
 def _build_router() -> LLMRouter:
@@ -43,27 +43,37 @@ class NDJSONRequestHandler(socketserver.StreamRequestHandler):
             raw = self.rfile.readline()
             if not raw:
                 break
+
             try:
                 decoded = raw.decode("utf-8")
             except UnicodeDecodeError:
-                self._send({"ok": False, "error": "invalid_encoding"})
+                self._send_safe({"ok": False, "error": "invalid_encoding"})
                 continue
+
             line = decoded.strip()
             if not line:
-                self._send({"ok": False, "error": "empty_message"})
+                # Ignore blank lines instead of erroring; clients often send them.
                 continue
+
             try:
                 payload = json.loads(line)
             except json.JSONDecodeError:
-                self._send({"ok": False, "error": "invalid_json"})
+                self._send_safe({"ok": False, "error": "invalid_json"})
                 continue
-            if not isinstance(payload, dict):
-                self._send({"ok": False, "error": "invalid_message_type"})
-                continue
-            self._send(handle_command(payload))
 
-    def _send(self, body: dict) -> None:
-        self.wfile.write((json.dumps(body) + "\n").encode("utf-8"))
+            if not isinstance(payload, dict):
+                self._send_safe({"ok": False, "error": "invalid_message_type"})
+                continue
+
+            self._send_safe(handle_command(payload))
+
+    def _send_safe(self, body: dict) -> None:
+        try:
+            self.wfile.write((json.dumps(body) + "\n").encode("utf-8"))
+            self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError):
+            # Client disconnected before reading response; that's fine.
+            return
 
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
