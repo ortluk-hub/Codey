@@ -3,10 +3,10 @@
 import json
 import socketserver
 
-from .config import DEFAULT_SETTINGS
-from .llm import LLMRouter, OllamaClient
-from .sandbox import run_python_in_docker
-from .status import get_phase_1_status, get_phase_2_status, get_phase_3_status
+from config import DEFAULT_SETTINGS
+from llm import LLMRouter, OllamaClient
+from sandbox import run_python_in_docker
+from status import get_phase_1_status, get_phase_2_status, get_phase_3_status
 
 
 def _build_router() -> LLMRouter:
