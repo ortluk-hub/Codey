@@ -15,6 +15,9 @@ def _build_router() -> LLMRouter:
     )
 
 
+ROUTER = _build_router()
+
+
 try:
     from fastapi import FastAPI
     from fastapi.responses import HTMLResponse
@@ -157,7 +160,7 @@ if FastAPI:
 
     @app.post("/chat")
     def chat(body: ChatRequest) -> dict:
-        return _build_router().route_chat(body.message)
+        return ROUTER.route_chat(body.message)
 else:
     app = None
 

@@ -17,6 +17,9 @@ def _build_router() -> LLMRouter:
     )
 
 
+ROUTER = _build_router()
+
+
 def handle_command(payload: dict) -> dict:
     cmd = payload.get("cmd")
     if cmd == "ping":
@@ -26,7 +29,7 @@ def handle_command(payload: dict) -> dict:
             return {"ok": False, "error": "unsupported_language"}
         return run_python_in_docker(payload.get("code", ""))
     if cmd == "chat":
-        routed = _build_router().route_chat(payload.get("message", ""))
+        routed = ROUTER.route_chat(payload.get("message", ""))
         return {"ok": True, **routed}
     if cmd == "get_phase_1_status":
         return {"ok": True, "status": get_phase_1_status()}

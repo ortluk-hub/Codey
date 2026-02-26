@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.5] - 2026-02-26
+- Added resilient stub recovery in `LLMRouter` to queue user messages while providers are unavailable and replay queued context to the first recovered provider call.
+- Switched API and TCP chat handlers to use a shared router instance so queued stub messages persist across requests.
+- Added unit tests covering message queueing during stub mode and queued-message replay on provider recovery.
+
 ## [1.3.1] - 2026-02-26
 
 ### Fixed
