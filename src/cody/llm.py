@@ -39,12 +39,19 @@ class LLMRouter:
     primary_model: str = "qwen3-coder:480b-cloud"
     fallback_model: str = "deepseek-coder:6.7b"
 
+    @staticmethod
+    def _safe_chat(client: OllamaClient, message: str, model: str) -> str | None:
+        try:
+            return client.chat(message, model=model)
+        except Exception:
+            return None
+
     def route_chat(self, message: str) -> dict:
-        reply = self.primary_client.chat(message, model=self.primary_model)
+        reply = self._safe_chat(self.primary_client, message, model=self.primary_model)
         if reply:
             return {"reply": reply, "provider": "ollama-cloud"}
 
-        reply = self.fallback_client.chat(message, model=self.fallback_model)
+        reply = self._safe_chat(self.fallback_client, message, model=self.fallback_model)
         if reply:
             return {"reply": reply, "provider": "ollama-local"}
 
