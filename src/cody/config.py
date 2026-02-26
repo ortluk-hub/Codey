@@ -11,7 +11,7 @@ class Settings:
 
     # All point to local Ollama server
     ollama_intent_url: str = "http://100.108.217.7:11434"
-    ollama_primary_url: str = "http://100.108.217.7:1134"
+    ollama_primary_url: str = "http://100.108.217.7:11434"
     ollama_fallback_url: str = "http://100.108.217.7:11434"    
     # Models (from your ollama list)
     intent_model: str = "qwen3:0.6b"           # Fast, small
