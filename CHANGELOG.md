@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0] - 2026-02-26
+
+### Added
+- Added a lightweight web chat interface at `GET /` in the FastAPI app so users can send messages to Cody from a browser.
+- Added `render_chat_page()` helper to keep the chat page HTML generation testable and isolated from routing.
+- Added unit tests validating that the chat page includes the form, title, and `POST /chat` integration.
+
 ## [1.2.0] - 2026-02-25
 
 ### Added
