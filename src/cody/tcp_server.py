@@ -17,10 +17,7 @@ def _build_router() -> LLMRouter:
     )
 
 
-ROUTER = _build_router()
-
-
-def handle_command(payload: dict) -> dict:
+def handle_command(payload: dict, router: LLMRouter | None = None) -> dict:
     cmd = payload.get("cmd")
     if cmd == "ping":
         return {"ok": True, "reply": "pong"}
@@ -29,7 +26,8 @@ def handle_command(payload: dict) -> dict:
             return {"ok": False, "error": "unsupported_language"}
         return run_python_in_docker(payload.get("code", ""))
     if cmd == "chat":
-        routed = ROUTER.route_chat(payload.get("message", ""))
+        active_router = router or _build_router()
+        routed = active_router.route_chat(payload.get("message", ""))
         return {"ok": True, **routed}
     if cmd == "get_phase_1_status":
         return {"ok": True, "status": get_phase_1_status()}
@@ -41,6 +39,10 @@ def handle_command(payload: dict) -> dict:
 
 
 class NDJSONRequestHandler(socketserver.StreamRequestHandler):
+    def setup(self) -> None:
+        super().setup()
+        self.router = _build_router()
+
     def handle(self) -> None:
         while True:
             raw = self.rfile.readline()
@@ -68,7 +70,7 @@ class NDJSONRequestHandler(socketserver.StreamRequestHandler):
                 self._send_safe({"ok": False, "error": "invalid_message_type"})
                 continue
 
-            self._send_safe(handle_command(payload))
+            self._send_safe(handle_command(payload, router=self.router))
 
     def _send_safe(self, body: dict) -> None:
         try:
