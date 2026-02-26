@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1] - 2026-02-26
+
+### Fixed
+- Fixed package import paths in `src/cody` modules to use package-relative imports so test and runtime imports resolve reliably.
+- Repaired a syntax error in `src/cody/llm.py` and hardened routing fallback behavior to return stable provider badges.
+- Corrected the primary Ollama endpoint port in config from `1134` to `11434`.
+
 ## [1.3.0] - 2026-02-26
 
 ### Added
