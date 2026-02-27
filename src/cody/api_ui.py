@@ -168,10 +168,7 @@ else:
 
 
 def main() -> None:
-    """
-
-    :rtype: None
-    """
+    """Start the FastAPI server using uvicorn."""
     if app is None:
         print("FastAPI/uvicorn not installed. Install requirements and run: python -m cody.api_ui")
         return
@@ -182,7 +179,7 @@ def main() -> None:
         print("uvicorn not installed. Install uvicorn and rerun.")
         return
 
-    uvicorn.run("api_ui:app", host="0.0.0.0", port=8000, reload=False)
+    uvicorn.run("cody.api_ui:app", host="0.0.0.0", port=8000, reload=False)
 
 
 if __name__ == "__main__":
