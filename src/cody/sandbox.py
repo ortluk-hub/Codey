@@ -9,7 +9,7 @@ class DockerPolicy:
     """Policy configuration for Docker sandbox execution."""
 
     image: str = "python:3.12-alpine"
-    timeout_seconds: int = 5
+    timeout_seconds: int = 30  # Increased for complex code
     memory: str = "128m"
     cpus: str = "0.5"
     pids_limit: int = 64

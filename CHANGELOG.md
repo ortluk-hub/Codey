@@ -1,5 +1,56 @@
 # Changelog
 
+## [0.2.0] - 2026-02-26
+
+### Added
+- Implemented **tool execution** with `ToolExecutor` class that runs Python code in the Docker sandbox for direct computation results.
+- Added **intent-based routing** that detects simple math expressions (e.g., "What is 2 + 2 * 10?") and executes them locally without using cloud LLM credits.
+- Added `extract_code_block()` utility function to parse Python code from markdown responses.
+- Added `/run` POST endpoint to FastAPI for direct sandbox code execution.
+- Added comprehensive unit tests for tool execution, intent routing, and sandbox functionality.
+
+### Changed
+- Increased sandbox timeout from 5s to 30s for complex code execution.
+- Increased Ollama client timeout from 5s to 30s for larger model responses.
+- Updated intent resolution to use regex pattern matching for reliable math detection instead of relying on tiny LLM classification.
+
+### Fixed
+- Fixed `sandbox` import in `api_ui.py` to support the new `/run` endpoint.
+- Fixed uvicorn run command to use full module path `cody.api_ui:app`.
+
+## [0.1.10] - 2026-02-26
+
+### Added
+- Added environment variable support for Ollama URLs (`CODY_OLLAMA_PRIMARY_URL`, `CODY_OLLAMA_FALLBACK_URL`, `CODY_OLLAMA_INTENT_URL`) to allow configuration without code changes.
+- Added `CONTRIBUTING.md` with development setup instructions, code quality guidelines, and contribution workflow.
+- Added `pyproject.toml` for proper package installation with `pip install -e ".[dev]"`.
+- Added `__init__.py` to tests directory for reliable test discovery.
+- Added type hints and docstrings to `sandbox.py` and `status.py`.
+
+### Changed
+- Changed default Ollama URL from hardcoded IP to `http://127.0.0.1:11434` (configurable via environment).
+- Updated `requirements.txt` to include development dependencies (pytest, mypy, ruff).
+- Consolidated changelog versioning logic between `cody/status.py` and `codey/project.py`.
+
+### Fixed
+- Fixed package imports throughout `src/cody/` to use consistent `from . import ...` pattern.
+- Fixed test imports to use `from cody.*` package-style imports.
+
+## [0.1.9] - 2026-02-26
+
+### Added
+- Added structured logging configuration to `api_ui.py` for visibility into LLM routing decisions.
+- Added test script `test_cody.sh` for comprehensive integration testing of routing behavior.
+
+### Changed
+- Updated LLM routing flow: Intent Resolver → (Tool Execution OR Cloud/Local Fallback) → Stub.
+
+## [0.1.8] - 2026-02-26
+
+### Added
+- Added fallback chain verification tests showing Cloud → Local → Stub progression.
+- Added network isolation and read-only filesystem verification for sandbox security.
+
 ## [0.1.7] - 2026-02-26
 - Added a first-time environment setup section to `README.md` with virtualenv creation, dependency installation, and `PYTHONPATH=src/cody:src` guidance so users can run/test successfully on initial setup.
 

@@ -1,8 +1,15 @@
 """FastAPI UI entrypoint for Cody."""
 
+import logging
 import textwrap
 
-from . import config, llm, status
+from . import config, llm, sandbox, status
+
+# Configure logging to see LLM routing details
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s:     %(message)s",
+)
 
 
 def _build_router() -> llm.LLMRouter:
@@ -145,6 +152,11 @@ if FastAPI:
         message: str
 
 
+    class RunRequest(BaseModel):
+        code: str
+        language: str = "python"
+
+
     @app.get("/health")
     def health() -> dict:
         return {"status": "ok", "service": "cody"}
@@ -163,15 +175,21 @@ if FastAPI:
     @app.post("/chat")
     def chat(body: ChatRequest) -> dict:
         return ROUTER.route_chat(body.message, recipient="api-http")
+
+
+    @app.post("/run")
+    def run_code(body: RunRequest) -> dict:
+        """Execute code in the Docker sandbox."""
+        if body.language != "python":
+            return {"ok": False, "error": "unsupported_language", "message": "Only Python is supported"}
+        result = sandbox.run_python_in_docker(body.code)
+        return result
 else:
     app = None
 
 
 def main() -> None:
-    """
-
-    :rtype: None
-    """
+    """Start the FastAPI server using uvicorn."""
     if app is None:
         print("FastAPI/uvicorn not installed. Install requirements and run: python -m cody.api_ui")
         return
@@ -182,7 +200,7 @@ def main() -> None:
         print("uvicorn not installed. Install uvicorn and rerun.")
         return
 
-    uvicorn.run("api_ui:app", host="0.0.0.0", port=8000, reload=False)
+    uvicorn.run("cody.api_ui:app", host="0.0.0.0", port=8000, reload=False)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,38 @@
+[0;34m========================================[0m
+[0;34m  Cody Tool Usage & Routing Tests[0m
+[0;34m========================================[0m
+
+[1;33mTest 1: Simple math (expect: local-tool)[0m
+Request: What is 2 + 2 * 10?
+Response: {"reply":"Result:\n```\n22\n```","provider":"local-tool","executed_code":"print(2 + 2 * 10)","exit_code":0}
+
+[1;33mTest 2: String reverse (expect: local-tool)[0m
+Request: Reverse the string hello
+Response: {"reply":"To reverse the string \"hello\", I'll show you a few different approaches:\n\n**Python:**\n```python\n# Method 1: Using slicing\nreversed_string = \"hello\"[::-1]\nprint(reversed_string)  # Output: olleh\n\n# Method 2: Using reversed() function\nreversed_string = ''.join(reversed(\"hello\"))\nprint(reversed_string)  # Output: olleh\n```\n\n**JavaScript:**\n```javascript\n// Method 1: Using split, reverse, and join\nlet reversedString = \"hello\".split('').reverse().join('');\nconsole.log(reversedString); // Output: olleh\n\n// Method 2: Using spread operator (ES6)\nlet reversedString = [...\"hello\"].reverse().join('');\nconsole.log(reversedString); // Output: olleh\n```\n\n**Result:** The reversed string is `olleh`","provider":"ollama-cloud"}
+
+[1;33mTest 3: Python decorator (expect: ollama-cloud)[0m
+Request: Explain what a Python decorator is
+Response: {"reply":"A Python decorator is a special kind of function that takes another function and extends the behavior of this existing function without explicitly modifying it. In simpler terms, a decorator enhances or changes the functionality of a function without affecting other functions. They are used for wrapping another function in order to extend the behavior of the wrapped function, without permanently modifying it.\n\nDecorators are represented by the @ symbol followed by the name of the decorator and parentheses (which can include arguments). Here's an example:\n\n```python\n@decorator_name\ndef function():\n    pass\n```\n\nIn this code, `function` is decorated with the behavior provided by the `decorator_name`. The actual workings of what happens when you use a decorator depends on what the decorator does. \n\nA common example of a decorator is @property. When used to wrap methods in a class, it changes a method into an attribute. This can simplify code and make it more readable:\n\n```python\nclass Dog:\n    def __init__(self, name):\n        self._name = name\n        \n    @property\n    def name(self):\n        return self._name\n```\n\nIn this case, the `name` method is decorated with @property. Now you can access the dog's name as an attribute:\n\n```python\ndog = Dog(\"Buddy\")\nprint(dog.name)  # Outputs: \"Buddy\"\n```\n","provider":"ollama-local"}
+
+[1;33mTest 4: Sum 1 to 100 (expect: local-tool)[0m
+Request: Calculate the sum of numbers 1 to 100
+Response: {"reply":"Here are several ways to calculate the sum of numbers from 1 to 100:\n\n## Method 1: Using the Mathematical Formula\nThe sum of consecutive integers from 1 to n is: **n(n+1)/2**\n\nFor n = 100:\n```\nSum = 100 × 101 ÷ 2 = 5,050\n```\n\n## Method 2: Python Code Solutions\n\n**Using a loop:**\n```python\ntotal = 0\nfor i in range(1, 101):\n    total += i\nprint(total)  # Output: 5050\n```\n\n**Using built-in sum() function:**\n```python\ntotal = sum(range(1, 101))\nprint(total)  # Output: 5050\n```\n\n**Using list comprehension:**\n```python\ntotal = sum([i for i in range(1, 101)])\nprint(total)  # Output: 5050\n```\n\n## Method 3: Manual Calculation\n1 + 2 + 3 + ... + 100 = 5,050\n\n**Answer: 5,050**\n\nThe mathematical formula is the most efficient approach, especially for large ranges, as it runs in constant time O(1) rather than linear time O(n).","provider":"ollama-cloud"}
+
+[1;33mTest 5: Write a function (expect: ollama-cloud)[0m
+Request: Write a Python function to check if a number is prime
+Response: {"reply":"Sure, I can help with that. Here's a simple implementation of a function in Python that checks if a given number is prime:\n\n```python\ndef is_prime(n):\n    \"\"\"Return True if n is a prime number.\"\"\"\n    \n    # handle the special cases 0 and 1 manually\n    if n <= 1:\n        return False\n\n    # check for divisibility by any numbers up to sqrt(n)\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0:\n            return False\n    \n    # if we have reached this point without returning False, then the number is prime\n    return True\n```\nThis function works by iteratively checking for divisibility from 2 up to the square root of the input number. If any such number evenly divides into it (i.e., leaves a remainder of zero when divided), then the input number cannot be prime, so the function returns False in this case. If no such number is found by the time we have checked all numbers up to sqrt(n), then n must be prime and the function returns True.\n","provider":"ollama-local"}
+
+[1;33mTest 6: Simple division (expect: local-tool)[0m
+Request: What is 100 divided by 4?
+Response: {"reply":"Result:\n```\n25.0\n```","provider":"local-tool","executed_code":"print(100 / 4)","exit_code":0}
+
+[1;33mTest 7: Direct sandbox execution[0m
+Request: Run print(42)
+Response: {"ok":true,"stdout":"42\n","stderr":"","exit_code":0}
+
+[1;33mTest 8: Health check[0m
+Response: {"status":"ok","service":"cody"}
+
+[0;34m========================================[0m
+[0;34m  All tests completed![0m
+[0;34m========================================[0m
