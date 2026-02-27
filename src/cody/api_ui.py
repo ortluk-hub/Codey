@@ -1,22 +1,19 @@
 """FastAPI UI entrypoint for Cody."""
 
-from textwrap import dedent
+import textwrap
 
-from config import DEFAULT_SETTINGS
-from llm import LLMRouter, OllamaClient
-from status import get_phase_1_status, get_phase_2_status, get_phase_3_status
+from . import config, llm, status
 
 
-def _build_router() -> LLMRouter:
-    return LLMRouter(
-        intent_client=OllamaClient(DEFAULT_SETTINGS.ollama_intent_url),
-        primary_client=OllamaClient(DEFAULT_SETTINGS.ollama_primary_url),
-        fallback_client=OllamaClient(DEFAULT_SETTINGS.ollama_fallback_url),
+def _build_router() -> llm.LLMRouter:
+    return llm.LLMRouter(
+        intent_client=llm.OllamaClient(config.DEFAULT_SETTINGS.ollama_intent_url),
+        primary_client=llm.OllamaClient(config.DEFAULT_SETTINGS.ollama_primary_url),
+        fallback_client=llm.OllamaClient(config.DEFAULT_SETTINGS.ollama_fallback_url),
     )
 
 
 ROUTER = _build_router()
-
 
 try:
     from fastapi import FastAPI
@@ -31,7 +28,7 @@ except ImportError:
 def render_chat_page() -> str:
     """Render a lightweight in-browser chat client for the /chat API."""
 
-    return dedent(
+    return textwrap.dedent(
         """\
         <!doctype html>
         <html lang="en">
@@ -143,20 +140,25 @@ def render_chat_page() -> str:
 if FastAPI:
     app = FastAPI(title="Cody API UI")
 
+
     class ChatRequest(BaseModel):
         message: str
+
 
     @app.get("/health")
     def health() -> dict:
         return {"status": "ok", "service": "cody"}
 
+
     @app.get("/", response_class=HTMLResponse)
     def chat_ui() -> str:
         return render_chat_page()
 
+
     @app.get("/status")
-    def status() -> dict:
-        return {"phase_1": get_phase_1_status(), "phase_2": get_phase_2_status(), "phase_3": get_phase_3_status()}
+    def status_endpoint() -> dict:
+        return {"phase_1": status.get_phase_1_status(), "phase_2": status.get_phase_2_status(), "phase_3": status.get_phase_3_status()}
+
 
     @app.post("/chat")
     def chat(body: ChatRequest) -> dict:
@@ -166,6 +168,10 @@ else:
 
 
 def main() -> None:
+    """
+
+    :rtype: None
+    """
     if app is None:
         print("FastAPI/uvicorn not installed. Install requirements and run: python -m cody.api_ui")
         return

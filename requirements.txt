@@ -1,2 +1,8 @@
-fastapi
-uvicorn
+# Runtime dependencies
+fastapi>=0.100.0
+uvicorn>=0.23.0
+
+# Development dependencies
+pytest>=7.0.0
+mypy>=1.0.0
+ruff>=0.1.0

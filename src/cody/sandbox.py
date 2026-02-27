@@ -6,6 +6,8 @@ import subprocess
 
 @dataclass(frozen=True)
 class DockerPolicy:
+    """Policy configuration for Docker sandbox execution."""
+
     image: str = "python:3.12-alpine"
     timeout_seconds: int = 5
     memory: str = "128m"
@@ -17,7 +19,8 @@ class DockerPolicy:
     cap_drop_all: bool = True
 
     def to_docker_flags(self) -> list[str]:
-        flags = [
+        """Generate Docker CLI flags from policy settings."""
+        flags: list[str] = [
             "--rm",
             "--memory",
             self.memory,
@@ -44,8 +47,18 @@ class DockerPolicy:
 
 
 def run_python_in_docker(code: str, policy: DockerPolicy | None = None) -> dict:
+    """Execute Python code in a Docker sandbox with the given policy.
+
+    Args:
+        code: Python code to execute.
+        policy: Optional DockerPolicy configuration. Uses defaults if not provided.
+
+    Returns:
+        Dictionary with execution result containing 'ok', 'stdout', 'stderr', 'exit_code',
+        or 'error' and 'message' on failure.
+    """
     sandbox_policy = policy or DockerPolicy()
-    cmd = [
+    cmd: list[str] = [
         "docker",
         "run",
         *sandbox_policy.to_docker_flags(),

@@ -4,23 +4,20 @@ import json
 import socketserver
 import uuid
 
-from config import DEFAULT_SETTINGS
-from llm import LLMRouter, OllamaClient
-from sandbox import run_python_in_docker
-from status import get_phase_1_status, get_phase_2_status, get_phase_3_status
+from . import config, llm, sandbox, status
 
 
-def _build_router() -> LLMRouter:
-    return LLMRouter(
-        intent_client=OllamaClient(DEFAULT_SETTINGS.ollama_intent_url),
-        primary_client=OllamaClient(DEFAULT_SETTINGS.ollama_primary_url),
-        fallback_client=OllamaClient(DEFAULT_SETTINGS.ollama_fallback_url),
+def _build_router() -> llm.LLMRouter:
+    return llm.LLMRouter(
+        intent_client=llm.OllamaClient(config.DEFAULT_SETTINGS.ollama_intent_url),
+        primary_client=llm.OllamaClient(config.DEFAULT_SETTINGS.ollama_primary_url),
+        fallback_client=llm.OllamaClient(config.DEFAULT_SETTINGS.ollama_fallback_url),
     )
 
 
 def handle_command(
     payload: dict,
-    router: LLMRouter | None = None,
+    router: llm.LLMRouter | None = None,
     request_id: str | None = None,
     recipient: str = "unknown",
 ) -> dict:
@@ -30,7 +27,7 @@ def handle_command(
     if cmd == "run":
         if payload.get("language") != "python":
             return {"ok": False, "error": "unsupported_language"}
-        return run_python_in_docker(payload.get("code", ""))
+        return sandbox.run_python_in_docker(payload.get("code", ""))
     if cmd == "chat":
         active_router = router or _build_router()
         routed = active_router.route_chat(
@@ -38,11 +35,11 @@ def handle_command(
         )
         return {"ok": True, **routed}
     if cmd == "get_phase_1_status":
-        return {"ok": True, "status": get_phase_1_status()}
+        return {"ok": True, "status": status.get_phase_1_status()}
     if cmd == "get_phase_2_status":
-        return {"ok": True, "status": get_phase_2_status()}
+        return {"ok": True, "status": status.get_phase_2_status()}
     if cmd == "get_phase_3_status":
-        return {"ok": True, "status": get_phase_3_status()}
+        return {"ok": True, "status": status.get_phase_3_status()}
     return {"ok": False, "error": "unknown_command"}
 
 
@@ -103,8 +100,8 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
 
 def main() -> None:
-    with ThreadedTCPServer((DEFAULT_SETTINGS.tcp_host, DEFAULT_SETTINGS.tcp_port), NDJSONRequestHandler) as server:
-        print(f"Cody TCP server listening on {DEFAULT_SETTINGS.tcp_host}:{DEFAULT_SETTINGS.tcp_port}")
+    with ThreadedTCPServer((config.DEFAULT_SETTINGS.tcp_host, config.DEFAULT_SETTINGS.tcp_port), NDJSONRequestHandler) as server:
+        print(f"Cody TCP server listening on {config.DEFAULT_SETTINGS.tcp_host}:{config.DEFAULT_SETTINGS.tcp_port}")
         server.serve_forever()
 
 

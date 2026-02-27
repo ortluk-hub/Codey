@@ -1,6 +1,26 @@
 """Core project model for Cody/Codey agent framework."""
 
 from dataclasses import dataclass
+from pathlib import Path
+
+
+def _get_changelog_path() -> Path:
+    """Resolve CHANGELOG.md from the project root."""
+    this_file = Path(__file__).resolve()
+    for parent in this_file.parents:
+        candidate = parent / "CHANGELOG.md"
+        if candidate.exists():
+            return candidate
+    return this_file.parents[2] / "CHANGELOG.md"
+
+
+def _count_changelog_versions() -> int:
+    """Count version headers in CHANGELOG.md."""
+    changelog = _get_changelog_path()
+    if not changelog.exists():
+        return 0
+    content = changelog.read_text(encoding="utf-8")
+    return sum(1 for line in content.splitlines() if line.startswith("## ["))
 
 
 @dataclass(frozen=True)
@@ -155,9 +175,7 @@ def get_phase_1_status() -> PhaseStatus:
         and architecture.runtime_policy.tools_available
         and architecture.runtime_policy.filesystem_access == "containerized_sandbox"
     )
-    has_versioned_phase_metadata = architecture.modular and any(
-        milestone.phase.startswith("Phase 1") for milestone in get_roadmap()
-    )
+    has_versioned_phase_metadata = architecture.modular and _count_changelog_versions() >= 1
 
     checks = (
         "Communication contract fixed to TCP port 8888 and FastAPI chat UI."
